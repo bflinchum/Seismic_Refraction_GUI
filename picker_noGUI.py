@@ -746,69 +746,14 @@ class picker:
         nq = 4000  # Nyquist Frequency
         order = 1
     
-        shotLoc = 500
+        shotLoc = 80
         
 
-        #BLAIR
-        # if pickP ==1:
-        #     pickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/BlairLine/BW_072613_PPicks.txt'
-        #     convSPickFile ='/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/BlairLine/segyFiles_Horizontals/stacked/BW_SwavePicks.txt'
-        #     dirName = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/BlairLine/Vertical/segyFiles/'
-        # else:
-        #     pickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/BlairLine/segyFiles_Horizontals/stacked/BW_SwavePicks.txt'
-        #     convSPickFile ='/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/BlairLine/BW_072613_PPicks.txt'
-        #     dirName = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/BlairLine/segyFiles_Horizontals/stacked/'
-                
-        #DUKE: S-waves
-        if pickP == 1:
-            #DUKE: P-waves
-            pickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/P-wave/Duke_all_Pwave_picks.txt'        
-            convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/S-wave/Duke_all_Swave_picks_v2.txt'
-            #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/GMT/Full-Pwave_smooth/Duke_all_Pwave_picks_Pwave_modeledTravelTimes.txt'
-            dirName = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/P-wave/'
-        
-            pickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/08122022_Day5/P-wave_Stacked/ValidationLine_Pwave.txt'
-            dirName = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/08122022_Day5/P-wave_Stacked/'
-            convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/ValidationLine/ValidationLine_Pwave_Pwave_modeledTravelTimes.txt'
-        else:
-            pickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/S-wave/Duke_all_Swave_picks_v2.txt'
-            #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/S-wave/Duke_all_Swave_picks_withLVZ_Pwave_modeledTravelTimes.txt'
-            #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/P-wave/Duke_all_Pwave_picks.txt'
-            convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/S-wave/Duke_all_Swave_picks_v2_Pwave_modeledTravelTimes.txt'
-            dirName = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/S-wave/'
-                        
-            #pickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/08122022_Day5/S-wave_Stacked/ValidationLine_Swave.txt'
-            #dirName = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/08122022_Day5/S-wave_Stacked/'
-            #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/ValidationLine/ValidationLine_Swave_Swave_modeledTravelTimes.txt'
-        
-        
-        #DAY 1 LINE
-        #pickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day1_Seismic/S-wave/stacked/CEF_Day1_SWave_picks.txt'
-        #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day1_Seismic/S-wave/stacked/CEF_Day1_PWave_picks.txt'
-        #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day2_Seismic/S-wave/Stacked/CEF_Day2_SWave_picks.txt'
-        #dirName = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day1_Seismic/S-wave/stacked/'
-                
-        #pickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day1_Seismic/S-wave/stacked/CEF_Day1_PWave_picks.txt'
-        #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day1_Seismic/S-wave/stacked/CEF_Day1_SWave_picks.txt'
-        #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day2_Seismic/S-wave/Stacked/CEF_Day2_PWave_picks.txt'
-        #dirName = '/Users/bflinch/Dropbox/Clemson/Teaching/Spring2021/GEOL3700_CriticalZoneGeophysics/Data/Day1/Seismic/segyFiles/P-wave/'
-
-        #DAY 2 LINE
-        #pickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day2_Seismic/S-wave/Stacked/CEF_Day2_SWave_picks.txt'
-        #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day2_Seismic/S-wave/Stacked/CEF_Day2_PWave_picks.txt'
-        #dirName = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day2_Seismic/S-wave/Stacked/'
-                
-        #pickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day2_Seismic/S-wave/Stacked/CEF_Day2_PWave_picks.txt'
-        #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day2_Seismic/S-wave/Stacked/CEF_Day2_SWave_picks.txt'
-        #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day2_Seismic/CombinedInversion/SCP_L12_verticalShots_BFPicks_match_Pwave_modeledTravelTimes.txt'
-        #dirName = '/Users/bflinch/Dropbox/Clemson/Teaching/Spring2021/GEOL3700_CriticalZoneGeophysics/Data/Day2/Seismic/segyFiles/P-Wave/stacked/'
-
-
-        pickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/BCZN/Piedmont/Line_12_Swave/Version_2/P-wave_bootstrap/SCP_L12_verticalShots_BFPicks.txt'
-        convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/BCZN/Piedmont/Line_12_Swave/Version_2/S-wave_bootstrap/SCP_L12_horizontalShots_BFPicks.txt'
-        #convSPickFile = '/Users/bflinch/Dropbox/Clemson/Research/Manuscripts/S-waveVelocites/ClemsonEF/Day2_Seismic/CombinedInversion/SCP_L12_verticalShots_BFPicks_match_Pwave_modeledTravelTimes.txt'
-        dirName = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/BCZN/Piedmont/Line_12_Swave/Version_2/S-waves/extractedHorizontals/'
-        dirName = '/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/BCZN/Piedmont/Line_12_Swave/Version_2/P-waves/extractedVerticals/'
+     
+        pickFile = 'SCP_L12_verticalShots_BFPicks.txt'
+        convSPickFile = 'SCP_L12_horizontalShots_BFPicks.txt'
+        dirName = ''
+        dirName = ''
 
 
         fileInfo = getFileInfo(dirName)
