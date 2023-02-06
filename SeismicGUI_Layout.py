@@ -11,7 +11,6 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolb
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 class windowLayout():    
     def __init__(self, MW):        
         #DEFINE CLASS VARIBLES

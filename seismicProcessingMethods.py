@@ -14,7 +14,8 @@ from scipy import signal
 import segyio
 #path management
 import glob as glb
-
+#For file i/o
+import os
 
 def normalizeTraces(data):
     """
@@ -37,15 +38,6 @@ def normalizeTraces(data):
 
 def getFileInfo(dirName):
     """
-    This function will read all of the *.segy or & *.sgy files in a given 
-    directory. It returns a list with the file name and the shot location.
-    This information will be passed to the GUI to display the file names. At
-    a latter time it might be worth extracting other things from the headers
-    and storing them in this list.
-    
-    DEPENDENCIES:
-        GLOB - this is used to get the file names in the directory
-        segyio - this is used to read the segy files and extract header info
     INPUTS:
         dirName (str) = this is a string to the directory that contains all of 
         the segy files from the survey.
@@ -54,6 +46,15 @@ def getFileInfo(dirName):
         Column 1 (str) = file name
         Column 2 (float) = shot location (units assumed to be m)
         
+    This function will read all of the *.segy or & *.sgy files in a given 
+    directory. It returns a list with the file name and the shot location.
+    This information will be passed to the GUI to display the file names. At
+    a latter time it might be worth extracting other things from the headers
+    and storing them in this list.
+    
+    DEPENDENCIES:
+        GLOB - this is used to get the file names in the directory
+        segyio - this is used to read the segy files and extract header info        
     NOTES:
         At this stage I use two if statemetns to check for segy files. If there
         are no segy files fileInfo will be an empty list and the user will get 
@@ -121,3 +122,25 @@ def getData(fileType, file):
             for i in range(0, ngx):
                 data[:, i] = f.trace[i]
     return x, t, data, gx, shotLoc
+
+def bpData(data, lf, hf, nq, order):
+    """
+    Applies a band-pass filter to each trace (column in 2d array)
+    Inputs
+    data = a numpy array that is nt x ns (nt = time samples, ns = number of recievers)
+    lf = lower corner frequency (Hz)
+    hf = upper corner frequency (Hz)
+    nq = nyquist frequency (1/2*dt)
+    order = order of the bp filter (required for sp.signal.butter)
+    
+    Outputs: 
+    fData = a filtered (along columns) numpy array that is nt x ns (nt = time samples, ns = number of recievers)
+    """
+    wl = lf / nq
+    wh = hf / nq
+    b, a = signal.butter(order, [wl, wh], btype="bandpass")
+    fData = data * 0
+    for i in range(0, data.shape[1]):
+        fData[:, i] = signal.filtfilt(b, a, data[:, i])
+
+    return fData
