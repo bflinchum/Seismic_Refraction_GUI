@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 import seismicProcessingMethods as spm
 
 class WindowLayout():
+    amp = 0.5
+
     def __init__(self, MW):
         #Main menu set up
         self.MW = MW
@@ -39,17 +41,21 @@ class WindowLayout():
 
         #Plot graph
         x, t, data, gx, shotLocation = spm.getData("segy", "70_extracted.sgy")
-        plot_graph(self, x, t, data)
+        self.plot_graph(plot, x, t, data)
 
         #Main plot sliders 
         plotSlider = tk.Frame(MW, width=1300, height=100, bg='white')
         plotSlider.grid(row=2, column=0, padx=5, pady=5, sticky = tk.W + tk.N)
         plotSlider.pack_propagate(False)
 
-        amp = 0.5
-        ampSlider = tk.Scale(plotSlider, variable=amp, label="Amplitude", from_=0, to=1, resolution=0.01, length=1000, orient='horizontal')
+        #lambda i = i: button_click(i))
+        #graphPlot = lambda x, t, data, plot: self.graph_plot(x, t, data, plot)
+        #graphPlot(x, t, data, plot)
+
+        ampSlider = tk.Scale(plotSlider, variable=self.amp, label="Amplitude", from_=0, to=1, resolution=0.01, 
+            length=1000, orient='horizontal', command=lambda x = x: self.plot_graph(x, t, data, plot))
         ampSlider.grid(row=0, column=0, padx=5, pady=5)
-        ampEntry = tk.Entry(plotSlider, width=10, textvariable=amp)
+        ampEntry = tk.Entry(plotSlider, width=10, textvariable=self.amp)
         ampEntry.grid(row=0, column=1, padx=5, pady=5)
 
         maxTime = 0.5
@@ -84,12 +90,12 @@ class WindowLayout():
         #Short-cuts 
         self.MW.bind('<q>', lambda e: MW.destroy())
 
-    def plot_graph(self, x, t, data):
+    def plot_graph(self, plot, x, t, data):
         data = spm.normalizeTraces(data)
 
         fig = plt.Figure(figsize = (13, 5), dpi=100)      
         ax1 = fig.add_subplot(111) 
-        ax1.pcolorfast(x, t, data)
+        ax1.pcolorfast(x, t, data, vmin=0, vmax=self.amp)
         ax1.set_xlabel('Distance') 
         ax1.set_ylabel('Time') 
         fig.tight_layout()
