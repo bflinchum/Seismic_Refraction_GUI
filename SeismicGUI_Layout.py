@@ -3,13 +3,14 @@
 """
 Created on Sun Jan 15 19:50:08 2023
 
-@author: bflinch
+@author: bflinch, sand583
 """
 
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
 import numpy as np
 import matplotlib.pyplot as plt
+import seismicProcessingMethods as spm
 
 class windowLayout():    
     def __init__(self, MW):        
@@ -53,8 +54,12 @@ class windowLayout():
         mainSliderFrame.grid(row=2,column=0,padx=10,pady=5,sticky=tk.W+tk.N)
         mainSliderFrame.pack_propagate(False)        
         
+        x, t, data, gx, shotLocation = spm.getData("segy", "70_extracted.sgy")
+        data = spm.normalizeTraces(data)
+
         fig = plt.Figure(figsize = (13,5),dpi=100) #Create the figure        
         ax1 = fig.add_subplot(111) #add axis to figure
+        ax1.pcolorfast(x,t,data)
         ax1.set_xlabel('Distance') #add labels to x-axis
         ax1.set_ylabel('Time') #add label to y-axis
         fig.tight_layout()
@@ -78,6 +83,7 @@ class windowLayout():
         
         fig2 = plt.Figure(figsize = (2.5,5),dpi=100) #Create the figure        
         ax2 = fig2.add_subplot(111) #add axis to figure
+        ax2.plot(data[:, 48],t)
         ax2.set_xlabel('Distance') #add labels to x-axis
         ax2.set_ylabel('Time') #add label to y-axis
         ax2.yaxis.tick_right()
@@ -109,6 +115,7 @@ class windowLayout():
 if __name__ == "__main__":
     root = tk.Tk() #Create a tkinter object (emtpy window for manipuation)
     my_gui = windowLayout(root) #pass the new window to the class to create the layout.
+    root.mainloop() #Needed for running it outside of spyder 
     
     
     
