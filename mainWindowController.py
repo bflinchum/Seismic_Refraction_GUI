@@ -1,7 +1,7 @@
 #Controller for the main page (handels communication between view(s) and model(s))
 
 import tkinter as tk
-#import seismicProcessingMethods as spm
+import seismicProcessingMethods as spm
 import mainWindowView as mpv
 
 class MainPageController():
@@ -10,13 +10,19 @@ class MainPageController():
     pick_filename = None
 
     #seismic refraction info
-    x = None
-    t = None
-    data = None
-    gx = None
-    shot_location = None
+    seismic_data = None 
+    pick_data = None
 
-    def plot_graph(self):
+    def shot_graph(self):
+        pass
+
+    def read_seismic_file(self):
+        pass 
+
+    def read_pick_data(self):
+        pass
+
+    def write_pick_data(self):
         pass
 
 if __name__ == "__main__":
