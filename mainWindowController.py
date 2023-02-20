@@ -16,7 +16,7 @@ class MainPageController():
     gx = None
     shot_location = None
 
-    def plot_graph(self, plot, x, t, data):
+    def plot_graph(self):
         pass
 
 if __name__ == "__main__":
