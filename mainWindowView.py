@@ -59,10 +59,8 @@ class GraphFrame():
     canvas = None
 
     sliders_frame = None
-    #list of sliders 
-    sliders = []
-    #list of variables associated with sliders 
-    slider_variables = []
+    #Dictonary of sliders (key = name and value = Slider class object)
+    slider_dict = None
 
     slider_orient = 'horizontal'
     slider_length = 1000
@@ -93,4 +91,12 @@ class GraphFrame():
 
     #remove slider at index i 
     def remove_slider(self, i):
+        pass 
+
+class Slider():
+    slider = None
+    entry = None 
+    var = None 
+
+    def __init__(self):
         pass 
