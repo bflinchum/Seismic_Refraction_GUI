@@ -4,10 +4,13 @@ import tkinter as tk
 import seismicProcessingMethods as spm
 import mainWindowView as mpv
 
-#For getFile Info
+#For get_file_info_from_directory Info
 import glob as glb
 import os
 import segyio
+
+#For read_seismic File
+import numpy as np
 
 class MainPageController():
     #file info 
@@ -21,7 +24,7 @@ class MainPageController():
     def shot_graph(self):
         pass
 
-    def getFileInfo(self,dirName):
+    def get_file_info_from_directory(self,dirName):
         """
         This function will read all of the *.segy or & *.sgy files in a given 
         directory. It returns a list with the file name and the shot location.
@@ -67,6 +70,46 @@ class MainPageController():
                 # print(shotLoc)
             fileInfo.append([filename, shotLoc])
         return fileInfo
+    
+    def read_seismic_file(self, fileType, file):
+        """
+        Read data from segy or su file written to read a single file right now. 
+        Could modify to extract shot location from a compiled file (or give file 
+        list??) Options but segyio made it pretty easy.
+        
+        INPUTS
+        File type = Str with either segy or su
+        file = str with file name with path
+        
+        OUTPUTS
+        x = 1D array with reciever locations in m
+        t = 1D array with the time values in s
+        data = trace data in an np array that is nt x ns
+        gx = reciever spacing (calcualted from header) in m
+        shotLoc = Shot Location in m
+        """
+        if str(fileType).lower() == "segy":
+            with segyio.open(file, strict=False) as f:
+                t = f.samples / 1000
+                x = f.attributes(segyio.TraceField.GroupX)[:]
+                shotLoc = f.header[0][segyio.TraceField.SourceX]
+                gx = np.diff(x)[0]
+                ngx = len(x)
+                data = np.zeros((len(t), ngx))
+                for i in range(0, ngx):
+                    data[:, i] = f.trace[i]
+
+        elif str(fileType).lower() == "su":
+            with segyio.su.open(file) as f:
+                t = f.samples / 1000
+                x = f.attributes(segyio.TraceField.GroupX)[:]
+                shotLoc = f.header[0][segyio.TraceField.SourceX]
+                gx = np.diff(x)[0]
+                ngx = len(x)
+                data = np.zeros((len(t), ngx))
+                for i in range(0, ngx):
+                    data[:, i] = f.trace[i]
+        return x, t, data, gx, shotLoc
     
     
     def read_seismic_file(self):
