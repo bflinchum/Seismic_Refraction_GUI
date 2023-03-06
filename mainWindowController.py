@@ -21,9 +21,11 @@ class MainPageController():
         #Varibles that will be accessible in the class
         
         #file info varibles
-        self.current_shotLocation = 0 #Default to zero unless overwritten
-        self.seismic_directory_path = '' #Path to directory that holds seisimc data
+        self.current_shotLocation = 0 #Default to zero unless overwritten **GET FROM GUI**
+        self.seismic_directory_path = '' #Path to directory that holds seisimc data **GET FROM GUI**
         self.current_segy_fileName = '' #Depends on the shot location 
+        
+        self.fileInformation = [] #Empty List, populate once directory is selected from GUI
         
         #Create Instance of Seismic Data for access
         #Holds Data, geoLocs, dx_geoLocs, twtt
@@ -36,8 +38,6 @@ class MainPageController():
         
         #Create Instance of container holding all the plotting info
         self.seismicPlotParameters = seismicData.plottingSeismicDataParameters()
-        
-        
 
     def shot_graph(self):
         pass
@@ -87,7 +87,8 @@ class MainPageController():
                 shotLoc = f.header[0][segyio.TraceField.SourceX]
                 # print(shotLoc)
             fileInfo.append([filename, shotLoc])
-        return fileInfo
+        
+        self.fileInformation = fileInfo
     
     def read_segy_file(self, file):
         """
@@ -121,7 +122,6 @@ class MainPageController():
         self.seismicDataContainer.geoLocs = x
         self.seismicDataContainer.twtt = t
         self.seismicDataContainer.dx_geo = gx
-    
     
 
     def read_pick_data(self):
