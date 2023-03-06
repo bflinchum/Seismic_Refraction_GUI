@@ -1,8 +1,11 @@
 #Controller for the main page (handels communication between view(s) and model(s))
 
 import tkinter as tk
-import seismicProcessingMethods as spm
+#import seismicProcessingMethods as spm
 import mainWindowView as mpv
+
+#Class that will hold seismic refraciton data
+import seismicData 
 
 #For get_file_info_from_directory Info
 import glob as glb
@@ -13,13 +16,28 @@ import segyio
 import numpy as np
 
 class MainPageController():
-    #file info 
-    sgy_filename = None
-    pick_filename = None
-
-    #seismic refraction info
-    seismic_data = None 
-    pick_data = None
+    
+    def __init__(self):
+        #Varibles that will be accessible in the class
+        
+        #file info varibles
+        self.current_shotLocation = 0 #Default to zero unless overwritten
+        self.seismic_directory_path = '' #Path to directory that holds seisimc data
+        self.current_segy_fileName = '' #Depends on the shot location 
+        
+        #Create Instance of Seismic Data for access
+        #Holds Data, geoLocs, dx_geoLocs, twtt
+        self.seismicDataContainer = seismicData.seismicData() 
+        
+        #Create instance of container that will hold pickign data
+        #Holds Pick Data -- ShotLoc, GeoLoc, Pick Time
+        #Holds information related to modeled travel times
+        self.pickDataContainer = seismicData.pickData()
+        
+        #Create Instance of container holding all the plotting info
+        self.seismicPlotParameters = seismicData.plottingSeismicDataParameters()
+        
+        
 
     def shot_graph(self):
         pass
@@ -71,7 +89,7 @@ class MainPageController():
             fileInfo.append([filename, shotLoc])
         return fileInfo
     
-    def read_seismic_file(self, fileType, file):
+    def read_segy_file(self, file):
         """
         Read data from segy or su file written to read a single file right now. 
         Could modify to extract shot location from a compiled file (or give file 
@@ -88,32 +106,23 @@ class MainPageController():
         gx = reciever spacing (calcualted from header) in m
         shotLoc = Shot Location in m
         """
-        if str(fileType).lower() == "segy":
-            with segyio.open(file, strict=False) as f:
-                t = f.samples / 1000
-                x = f.attributes(segyio.TraceField.GroupX)[:]
-                shotLoc = f.header[0][segyio.TraceField.SourceX]
-                gx = np.diff(x)[0]
-                ngx = len(x)
-                data = np.zeros((len(t), ngx))
-                for i in range(0, ngx):
-                    data[:, i] = f.trace[i]
 
-        elif str(fileType).lower() == "su":
-            with segyio.su.open(file) as f:
-                t = f.samples / 1000
-                x = f.attributes(segyio.TraceField.GroupX)[:]
-                shotLoc = f.header[0][segyio.TraceField.SourceX]
-                gx = np.diff(x)[0]
-                ngx = len(x)
-                data = np.zeros((len(t), ngx))
-                for i in range(0, ngx):
-                    data[:, i] = f.trace[i]
-        return x, t, data, gx, shotLoc
+        with segyio.open(file, strict=False) as f:
+            t = f.samples / 1000
+            x = f.attributes(segyio.TraceField.GroupX)[:]
+            #shotLoc = f.header[0][segyio.TraceField.SourceX]
+            gx = np.diff(x)[0]
+            ngx = len(x)
+            data = np.zeros((len(t), ngx))
+            for i in range(0, ngx):
+                data[:, i] = f.trace[i]
+            
+        self.seismicDataContainer.data = data
+        self.seismicDataContainer.geoLocs = x
+        self.seismicDataContainer.twtt = t
+        self.seismicDataContainer.dx_geo = gx
     
     
-    def read_seismic_file(self):
-        pass 
 
     def read_pick_data(self):
         pass
