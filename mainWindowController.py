@@ -17,15 +17,13 @@ import numpy as np
 
 class MainPageController():
     
-    def __init__(self):
-        #Varibles that will be accessible in the class
-        
-        #file info varibles
-        self.current_shotLocation = 0 #Default to zero unless overwritten **GET FROM GUI**
+    def __init__(self):        
+        #CLASS VARIABLES/MEMBERS        
+        self.current_shotLocation = float #Default to zero unless overwritten **GET FROM GUI**
         self.seismic_directory_path = '' #Path to directory that holds seisimc data **GET FROM GUI**
         self.current_segy_fileName = '' #Depends on the shot location 
         
-        self.fileInformation = [] #Empty List, populate once directory is selected from GUI
+        self.fileInformation = [] #Empty List, populate once directory is selected from GUI **NEW METHOD GET FILE_4_Shot()
         
         #Create Instance of Seismic Data for access
         #Holds Data, geoLocs, dx_geoLocs, twtt
@@ -39,9 +37,12 @@ class MainPageController():
         #Create Instance of container holding all the plotting info
         self.seismicPlotParameters = seismicData.plottingSeismicDataParameters()
 
+    #CLASS METHODS:
     def shot_graph(self):
+        #THIS WILL CALL MAIN WINDOW VIEW
         pass
 
+    #dirName = "/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/P-wave/"
     def get_file_info_from_directory(self,dirName):
         """
         This function will read all of the *.segy or & *.sgy files in a given 
@@ -89,6 +90,11 @@ class MainPageController():
             fileInfo.append([filename, shotLoc])
         
         self.fileInformation = fileInfo
+        
+        #DO SOMETHING TO UPDATE THE VIEW **OPTIONAL***
+        #mwv.set_up_dropDrownMenu(fileInfo)
+
+        
     
     def read_segy_file(self, file):
         """
@@ -133,4 +139,4 @@ class MainPageController():
 if __name__ == "__main__":
     root = tk.Tk()
     mainPage = mpv.MainWindowView(root)
-    root.mainloop()
+    #root.mainloop()

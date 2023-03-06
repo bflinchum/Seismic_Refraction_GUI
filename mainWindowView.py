@@ -51,6 +51,7 @@ class MainWindowView():
         self.init_menu()
         self.init_trace()
         self.init_shot()
+        
     
     def init_main_window(self, MW):
         main_window = MW
@@ -84,6 +85,17 @@ class MainWindowView():
     def init_trace(self):
         pass
 
+    """
+    HOW BUTTON WILL MODIFY MAIN WINDOW CONTROLLER:
+        GET INFO -> PASS TO CONTROLER -> CONTROLLER FILTER PASS REALAVENT INFO -> VIEWER
+    def on_press_browse(self):
+        dirName = COME FROM THE BUTTON
+        mwc.MainPageController.get_file_info_from_directory(self, dirName)
+        
+        each widget is an object --> Widget is a subject ->
+        [our job what happens define whats happens on buttons press and what is returned 
+         to the screen] -> screen is observer
+    """
 #Class for frames with graphs and sliders 
 class GraphFrame():
     full_frame = None
