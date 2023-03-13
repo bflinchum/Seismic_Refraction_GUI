@@ -1,6 +1,8 @@
 #View for the main page (deals with only view things)
 
 import tkinter as tk
+
+from matplotlib.widgets import SliderBase
 import mainWindowController as mwc
 
 #MAIN/SHOT WINDOW VARIABLES
@@ -37,19 +39,19 @@ traceWin_yLabel = 'Time (ms)' #label for plot, set_ylabel()
 class MainWindowView():
     #class variable declaration
     main_window = None
-    
     menu_frame = None
+    shot = None
+    trace = None
     
-    shot_frame = None 
-    shot_slider_frame = None
-    
-    trace_frame = None
-    trace_slider_frame = None
 
     def __init__(self, MW):
         self.init_main_window(MW)
         self.init_menu()
+
+        #Create trace frame and add sliders 
         self.init_trace()
+
+        #Create shot frame and add sliders
         self.init_shot()
     
     def init_main_window(self, MW):
@@ -73,16 +75,30 @@ class MainWindowView():
         self.menu_frame = menu_frame
     
     def init_shot(self):
-        shot_frame = tk.Frame(self.main_window, width=1300, height=500, bg='white')
-        shot_frame.grid(row=1, column=0, padx=5, sticky="WN")
-        shot_frame.pack_propagate(False)
+        #create and add shot graph frame to main window
+        shot = GraphFrame(self.main_window, 1300, 500, 'white')
+        shot.full_frame.grid(row=2, column=0, padx=5, pady=5, sticky = tk.W + tk.N)
+        shot.full_frame.pack_propagate(False)
         
-        #mwc.MainPageController.shot_graph()
+        #add graph 
 
-        self.shot_frame = shot_frame
+        #add shot sliders 
+
+        #set local shot to class shot 
+        self.shot = shot
 
     def init_trace(self):
-        pass
+        #create and add trace graph frame to main window
+        trace = GraphFrame(self.main_window, 250, 500, 'white')
+        trace.full_frame.grid(row=2, column=1, padx=5, pady=5, sticky = tk.W + tk.N)
+        trace.full_frame.pack_propagate(False)
+
+        #add graph
+
+        #add sliders 
+
+        #set local shot to class shot 
+        self.trace = trace
 
 #Class for frames with graphs and sliders 
 class GraphFrame():
@@ -91,15 +107,14 @@ class GraphFrame():
     canvas = None
 
     sliders_frame = None
-    #Dictonary of sliders (key = name and value = Slider class object)
-    #Maybe change to a list? 
-    slider_dict = None
+    sliders = []
 
     slider_orient = 'horizontal'
     slider_length = 1000
 
-    def __init__(self):
-        pass 
+    def __init__(self, MW, w, h, b):
+        self.full_frame = tk.Frame(MW, width=w, height=h, bg=b)
+        self.sliders_frame = tk.Frame(MW, width=1200, height=0, bg='white')
 
     def init_graph(self):
         pass 
@@ -109,19 +124,32 @@ class GraphFrame():
         self.add_slider(self.sliders.length, root, label, f, t, r, c)
     
     #add slider at index i 
-    def add_slider(self, i, root, label, f, t, r, c):
+    def add_slider(self, i, root, label, f, t, r, c, v):
         #bounds checking 
         if (i > self.sliders.length or i < 0):
             return
+        temp = Slider(root, label, f, t, c, v[0])
+        self.sliders.insert(i, temp)
+
+    #remove slider with label l
+    def remove_slider(self, l):
+        pass
 
     #remove slider at index i 
     def remove_slider(self, i):
-        pass 
+        #bounds checking 
+        if (i > self.sliders.length or i < 0):
+            return
+        del self.sliders[i]
 
 class Slider():
-    slider = None
+    slider = None #tkinter slider 
     entry = None #textbox
-    var = None 
+    var = None #variable it links to
+    label = None #name of this slider
 
-    def __init__(self):
-        pass 
+    def __init__(self, root, l, f, t, r, c, v):
+        self.slider = tk.Scale(root, label=l, from_=f, to=t, resolution=r, command=c)
+        self.var = v[0]
+        self.entry = tk.Entry(root, width=10, textvariable=self.var)
+        self.label=l
