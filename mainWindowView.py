@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from tkinter import filedialog
+import os
 
 from matplotlib.widgets import SliderBase
 import mainWindowController as mwc
@@ -74,8 +75,11 @@ class MainWindowView():
         menu_frame.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
         menu_frame.pack_propagate(False)
 
-        btn_file = tk.Button(menu_frame, text="File", command = lambda self = self: self.test())
+        btn_file = tk.Button(menu_frame, text="File", command = lambda self = self: self.open_file_explorer())
         btn_file.grid(row = 0, column = 0)
+
+        btn_plot = tk.Button(menu_frame, text="Plot", command = lambda self = self: mwc.controller.plot_graph())
+        btn_plot.grid(row=0, column=1)
 
         self.menu_frame = menu_frame
     
@@ -114,7 +118,7 @@ class MainWindowView():
     def open_file_explorer(self):
         filename = filedialog.askopenfile(initialdir = "/", title = "Select a File", 
                                           filetypes = (("Text files", "*.txt*"), ("all files", "*.*")))
-        
+        os.startfile(os.path.abspath(filename))
 
 #Class for frames with graphs and sliders 
 class GraphFrame():
@@ -182,7 +186,7 @@ class Slider():
     var = None #variable it links to
     label = None #name of this slider
 
-    def __init__(self, root, l, f, t, r, c, v):
+    def __init__(self, root: tk.Frame, l, f, t, r, c, v):
         self.slider = tk.Scale(root, label=l, from_=f, to=t, resolution=r, command=c,
             orient='horizontal')
         self.var = v

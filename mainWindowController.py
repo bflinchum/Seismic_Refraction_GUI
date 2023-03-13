@@ -25,6 +25,11 @@ class MainPageController():
     def write_pick_data(self):
         pass
 
+    def plot_graph(self):
+        print("hello world!")
+
+controller = MainPageController()
+
 if __name__ == "__main__":
     root = tk.Tk()
     mainPage = mpv.MainWindowView(root)
