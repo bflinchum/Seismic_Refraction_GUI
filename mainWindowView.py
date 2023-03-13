@@ -1,6 +1,7 @@
 #View for the main page (deals with only view things)
 
 import tkinter as tk
+from tkinter import filedialog
 
 from matplotlib.widgets import SliderBase
 import mainWindowController as mwc
@@ -42,16 +43,11 @@ class MainWindowView():
     menu_frame = None
     shot = None
     trace = None
-    
 
     def __init__(self, MW):
         self.init_main_window(MW)
         self.init_menu()
-
-        #Create trace frame and add sliders 
         self.init_trace()
-
-        #Create shot frame and add sliders
         self.init_shot()
     
     def init_main_window(self, MW):
@@ -64,6 +60,12 @@ class MainWindowView():
         
         main_window.config(bg="lightgrey")
 
+        #Allow items in column 1, 2 and rows 1, 2 to change size with the window
+        main_window.columnconfigure(0, weight=1)
+        main_window.columnconfigure(1, weight=1)
+        main_window.rowconfigure(0, weight=1)
+        main_window.rowconfigure(1, weight=1)
+
         self.main_window = main_window
     
     #TODO: add menu items like: file (save, save as, open, etc), view (apperance, etc), help (about, etc), etc
@@ -72,14 +74,17 @@ class MainWindowView():
         menu_frame.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
         menu_frame.pack_propagate(False)
 
+        btn_file = tk.Button(menu_frame, text="File", command = lambda self = self: self.test())
+        btn_file.grid(row = 0, column = 0)
+
         self.menu_frame = menu_frame
     
     def init_shot(self):
         #create and add shot graph frame to main window
-        shot = GraphFrame(self.main_window, 1300, 500, 'white')
-        shot.full_frame.grid(row=2, column=0, padx=5, pady=5, sticky = tk.W + tk.N)
-        shot.full_frame.pack_propagate(False)
-        
+        shot = GraphFrame(self.main_window, 1300, 500, 'white', 1, 0)
+        #shot.full_frame.grid(row=1, column=0, padx=5, pady=5, sticky = tk.W + tk.N)
+        #shot.full_frame.pack_propagate(False)
+
         #add graph 
 
         #add shot sliders 
@@ -89,58 +94,87 @@ class MainWindowView():
 
     def init_trace(self):
         #create and add trace graph frame to main window
-        trace = GraphFrame(self.main_window, 250, 500, 'white')
-        trace.full_frame.grid(row=2, column=1, padx=5, pady=5, sticky = tk.W + tk.N)
-        trace.full_frame.pack_propagate(False)
+        self.trace = GraphFrame(self.main_window, 250, 500, 'white', 1, 1)
+        #trace.full_frame.grid(row=1, column=1, padx=5, pady=5, sticky = tk.W + tk.N)
+        #trace.full_frame.pack_propagate(False)
 
         #add graph
 
         #add sliders 
+        var = 0.5
+        #trace.add_slider('Amplitude', 0, 1, 0.01, lambda self = self: self.test, var)
+        self.trace.create_slider('Amplitude', 0, 1, 0.01, lambda self = self: self.test, var)
+        #x = 5
+        #test = Slider(trace.sliders_frame, 'test', 0, 10, 0.5, lambda x = x: self.test(), x)
+        #trace.add_slider(test)
+    
+    def test(self):
+        print("This is a test :0")
 
-        #set local shot to class shot 
-        self.trace = trace
+    def open_file_explorer(self):
+        filename = filedialog.askopenfile(initialdir = "/", title = "Select a File", 
+                                          filetypes = (("Text files", "*.txt*"), ("all files", "*.*")))
+        
 
 #Class for frames with graphs and sliders 
 class GraphFrame():
     full_frame = None
     
+    canvas_frame = None
     canvas = None
 
     sliders_frame = None
     sliders = []
 
-    slider_orient = 'horizontal'
-    slider_length = 1000
-
-    def __init__(self, MW, w, h, b):
+    def __init__(self, MW, w, h, b, r, c):
         self.full_frame = tk.Frame(MW, width=w, height=h, bg=b)
-        self.sliders_frame = tk.Frame(MW, width=1200, height=0, bg='white')
+        self.full_frame.grid(row=r, column=c, padx=5, pady=5)
+        self.full_frame.pack_propagate(False)
+
+        self.canvas_frame = tk.Frame(self.full_frame, width=w, height = h / 2, bg = 'white')
+        self.canvas_frame.grid(row = 0, column = 0, padx = 5, pady = 5)
+        self.canvas_frame.pack_propagate(False)
+
+        self.sliders_frame = tk.Frame(self.full_frame, width=w, height = h / 2, bg='white')
+        self.sliders_frame.grid(row=1, column=0, padx=5, pady=5)
+        self.sliders_frame.pack_propagate(False)
 
     def init_graph(self):
         pass 
     
     #add slider at the end
-    def add_slider(self, root, label, f, t, r, c):
-        self.add_slider(self.sliders.length, root, label, f, t, r, c)
+    def add_slider(self, s):
+        self.add_slider_index(s, len(self.sliders))
     
     #add slider at index i 
-    def add_slider(self, i, root, label, f, t, r, c, v):
+    #TODO figure out how python overloading fucntions works >:(
+    def add_slider_index(self, s, i):
         #bounds checking 
-        if (i > self.sliders.length or i < 0):
+        if (i > len(self.sliders) or i < 0):
             return
-        temp = Slider(root, label, f, t, c, v[0])
-        self.sliders.insert(i, temp)
+        
+        self.sliders.insert(i, s)
+        self.sliders[i].slider.grid(row=i, column=0, padx=5, pady=5)
+
+    def create_slider(self, l, f, t, r, c, v):
+        temp = Slider(self.sliders_frame, l, f, t, r, c, v)
+        self.sliders.insert(len(self.sliders), temp)
+        self.sliders[len(self.sliders) - 1].grid(len(self.sliders) - 1)
+        #self.sliders[len(self.sliders) - 1].slider.grid(row=len(self.sliders) - 1, column=0, padx=5, pady=5)
 
     #remove slider with label l
-    def remove_slider(self, l):
+    def remove_slider_label(self, l):
         pass
 
     #remove slider at index i 
-    def remove_slider(self, i):
+    def remove_slider_index(self, i: int):
         #bounds checking 
         if (i > self.sliders.length or i < 0):
             return
         del self.sliders[i]
+    
+    def plot_graph(self, plot, x, t, data):
+        pass
 
 class Slider():
     slider = None #tkinter slider 
@@ -149,7 +183,11 @@ class Slider():
     label = None #name of this slider
 
     def __init__(self, root, l, f, t, r, c, v):
-        self.slider = tk.Scale(root, label=l, from_=f, to=t, resolution=r, command=c)
-        self.var = v[0]
+        self.slider = tk.Scale(root, label=l, from_=f, to=t, resolution=r, command=c,
+            orient='horizontal')
+        self.var = v
         self.entry = tk.Entry(root, width=10, textvariable=self.var)
         self.label=l
+    
+    def grid(self, r):
+        self.slider.grid(row=r, column=0, padx=5, pady=5)
