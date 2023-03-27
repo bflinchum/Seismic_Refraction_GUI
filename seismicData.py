@@ -19,14 +19,21 @@ class pickData:
         self.pick_modelTraveTimesExists = False
         self.pick_modelTraveTimePath = ''
         self.pick_modelTraveTimeFile = ''
-
+        
+        def delete_pick(self):
+            pass
+        def write_picks(self):
+            pass
+        def find_recipValue(self):
+            pass
 class seismicData:    
     def __init__(self):          
         #AFTER READING SEGY FILE INFORMATION ABOUT CURRENT SHOT
         self.geoLocs = np.array([],dtype=float) 
         self.twtt = np.array([],dtype=float)
         self.data = np.array([],dtype=float)
-        self.dx_geo = 2 #Default to 2 m but needs to get calculated upon reading data
+        self.offset = np.array([],dtype=float)
+        self.dx_geo = float #Default to 2 m but needs to get calculated upon reading data
         
         
         

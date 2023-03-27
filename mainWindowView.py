@@ -51,7 +51,11 @@ class MainWindowView():
         self.init_menu()
         self.init_trace()
         self.init_shot()
+        self.init_browse_button()
+        self.init_mainSliderFrame()
+        self.init_traceSliderFrame()
     
+        
     def init_main_window(self, MW):
         main_window = MW
 
@@ -72,6 +76,8 @@ class MainWindowView():
 
         self.menu_frame = menu_frame
     
+    #TODO: add menu items like: file (save, save as, open, etc), view (apperance, etc), help (about, etc), etc
+   
     def init_shot(self):
         shot_frame = tk.Frame(self.main_window, width=1300, height=500, bg='white')
         shot_frame.grid(row=1, column=0, padx=5, sticky="WN")
@@ -80,10 +86,51 @@ class MainWindowView():
         #mwc.MainPageController.shot_graph()
 
         self.shot_frame = shot_frame
+    
+    def init_mainSliderFrame(self):
+        mainSlider_frame = tk.Frame(self.main_window, width=1300, height=100, bg='white')
+        mainSlider_frame.grid(row=2, column=0, padx=5, sticky="WN")
+        mainSlider_frame.pack_propagate(False)
+        
+        #mwc.MainPageController.shot_graph()
 
+        self.mainSlider_frame = mainSlider_frame
+        
+        
     def init_trace(self):
-        pass
+        trace_frame = tk.Frame(self.main_window, width=250, height=500, bg='white')
+        trace_frame.grid(row=1, column=1, padx=5, sticky="WN")
+        trace_frame.pack_propagate(False)
+        
+        #mwc.MainPageController.shot_graph()
 
+        self.trace_frame = trace_frame
+        
+    def init_traceSliderFrame(self):
+        traceSlider_frame = tk.Frame(self.main_window, width=250, height=100, bg='white')
+        traceSlider_frame.grid(row=2, column=1, padx=5, sticky="WN")
+        traceSlider_frame.pack_propagate(False)
+        
+        #mwc.MainPageController.shot_graph()
+
+        self.traceSlider_frame = traceSlider_frame
+        
+    def init_browse_button(self):
+        browse_button = tk.Button(self.main_window,text='Browse',highlightcolor='gray',height=1,width=3)
+        browse_button.grid(row=0,column=0,padx=5,sticky="W")
+        #browse_button.pack_propogate(False)
+        self.browse_button = browse_button
+    """
+    HOW BUTTON WILL MODIFY MAIN WINDOW CONTROLLER:
+        GET INFO -> PASS TO CONTROLER -> CONTROLLER FILTER PASS REALAVENT INFO -> VIEWER
+    def on_press_browse(self):
+        dirName = COME FROM THE BUTTON
+        mwc.MainPageController.get_file_info_from_directory(self, dirName)
+        
+        each widget is an object --> Widget is a subject ->
+        [our job what happens define whats happens on buttons press and what is returned 
+         to the screen] -> screen is observer
+    """
 #Class for frames with graphs and sliders 
 class GraphFrame():
     full_frame = None
