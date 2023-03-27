@@ -116,7 +116,7 @@ class MainWindowView():
         self.traceSlider_frame = traceSlider_frame
         
     def init_browse_button(self):
-        browse_button = tk.Button(self.main_window,text='Browse',highlightcolor='white',height=1,width=3)
+        browse_button = tk.Button(self.main_window,text='Browse',highlightcolor='gray',height=1,width=3)
         browse_button.grid(row=0,column=0,padx=5,sticky="W")
         #browse_button.pack_propogate(False)
         self.browse_button = browse_button

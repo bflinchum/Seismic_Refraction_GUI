@@ -3,15 +3,12 @@
 import tkinter as tk
 #import seismicProcessingMethods as spm
 import mainWindowView as mpv
-
 #Class that will hold seismic refraciton data
 import seismicData 
-
 #For get_file_info_from_directory Info
 import glob as glb
 import os
 import segyio
-
 #For read_seismic File
 import numpy as np
 
@@ -117,24 +114,28 @@ class MainPageController():
         with segyio.open(file, strict=False) as f:
             t = f.samples / 1000
             x = f.attributes(segyio.TraceField.GroupX)[:]
-            #shotLoc = f.header[0][segyio.TraceField.SourceX]
+            shotLocs = f.attributes(segyio.TraceField.SourceX)[:]
+            #shotLocs = f.header[0][segyio.TraceField.SourceX]
             gx = np.diff(x)[0]
             ngx = len(x)
             data = np.zeros((len(t), ngx))
             for i in range(0, ngx):
                 data[:, i] = f.trace[i]
+                
             
         self.seismicDataContainer.data = data
         self.seismicDataContainer.geoLocs = x
         self.seismicDataContainer.twtt = t
         self.seismicDataContainer.dx_geo = gx
-    
+        self.seismicDataContainer.offset = shotLocs - gx
 
     def read_pick_data(self):
         pass
 
     def write_pick_data(self):
         pass
+
+controller = MainPageController()
 
 if __name__ == "__main__":
     root = tk.Tk()
