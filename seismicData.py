@@ -19,7 +19,12 @@ class pickData:
         self.pick_modelTraveTimesExists = False
         self.pick_modelTraveTimePath = ''
         self.pick_modelTraveTimeFile = ''
-
+        
+        def delete_pick(self):
+            pass
+        def write_picks(self):
+            pass
+        
 class seismicData:    
     def __init__(self):          
         #AFTER READING SEGY FILE INFORMATION ABOUT CURRENT SHOT

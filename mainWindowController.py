@@ -140,7 +140,6 @@ class MainPageController():
         self.pickDataContainer.pick_shotLocs = columnData[:, 0]
         self.pickDataContainer.pick_geoLocs = columnData[:, 1]
         self.pickDataContainer.pick_travelTimes = columnData[:, 2]
-        
 
     def write_pick_data(self):
         pass
