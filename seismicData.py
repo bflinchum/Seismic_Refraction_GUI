@@ -24,7 +24,8 @@ class pickData:
             pass
         def write_picks(self):
             pass
-        
+        def find_recipValue(self):
+            pass
 class seismicData:    
     def __init__(self):          
         #AFTER READING SEGY FILE INFORMATION ABOUT CURRENT SHOT
