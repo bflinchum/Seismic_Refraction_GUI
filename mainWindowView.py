@@ -1,6 +1,11 @@
 #View for the main page (deals with only view things)
 
 import tkinter as tk
+from tkinter import ttk
+from tkinter import filedialog
+import os
+
+from matplotlib.widgets import SliderBase
 import mainWindowController as mwc
 
 #MAIN/SHOT WINDOW VARIABLES
@@ -34,141 +39,166 @@ traceWin_maxAmp = 0.5 #Sets the amplitude (assumes trace is normalized!) vmin=mi
 traceWin_xLabel = 'Distance (m)' #Label for plot, set_xlabel()
 traceWin_yLabel = 'Time (ms)' #label for plot, set_ylabel()
 
-class MainWindowView():
-    #class variable declaration
-    main_window = None
-    
-    menu_frame = None
-    
-    shot_frame = None 
-    shot_slider_frame = None
-    
-    trace_frame = None
-    trace_slider_frame = None
+#style variables 
+#TODO: Move to a seperate file labled color_scheme or something like that
+title = 'Seismic Refactor'
 
-    def __init__(self, MW):
-        self.init_main_window(MW)
+min_window_width = 1000
+min_window_height = 560
+max_window_width = 1920
+max_window_height = 1080
+
+menu_height = 30
+
+split_shash_width = 5
+
+min_graph_frame_width = (min_window_width - split_shash_width) / 3
+min_canvas_height = 50
+min_sliders_height = 50
+entry_width = 10
+
+frame_padx = 5
+frame_pady = 5
+
+color_background = 'lightgrey'
+color_frame = 'white'
+color_menu = 'grey'
+
+pad_frame = 5
+
+class MainWindowView():
+    main_window = tk.Tk
+    menu_frame = tk.Frame
+    split_window = tk.PanedWindow
+    shot_frame = tk.Frame
+    trace_frame = tk.Frame
+
+    amp = None
+    time = None
+
+    def __init__(self, root):
+        self.init_main_window(root)
         self.init_menu()
+        self.init_split()
+
+    def init_main_window(self, root):
+        self.main_window = root
+        self.main_window.title('Seismic Refactor')
+        self.main_window.minsize(min_window_width, min_window_height)
+        self.main_window.maxsize(max_window_width, max_window_height)
+        self.main_window.config(bg=color_background)
+
+    def init_menu(self):
+        self.menu_frame = tk.Frame(self.main_window, height=menu_height, bg=color_menu, padx = frame_padx, pady= frame_pady)
+        self.menu_frame.grid(row=0, column=0, columnspan=2, sticky='nsew')
+
+        btn_file = tk.Button(self.menu_frame, text="File", command = lambda self = self: self.open_file_explorer())
+        btn_file.grid(row = 0, column = 0)
+
+    def init_split(self):
+        #init split_window
+        self.split_window = tk.PanedWindow(self.main_window, orient=tk.HORIZONTAL, sashrelief=tk.RAISED, sashwidth=split_shash_width)
+
         self.init_trace()
         self.init_shot()
-        self.init_browse_button()
-        self.init_mainSliderFrame()
-        self.init_traceSliderFrame()
-    
-        
-    def init_main_window(self, MW):
-        main_window = MW
 
-        main_window.title('My First GUI') 
+        self.split_window.grid(row=1, column=0, columnspan=2, sticky="nsew")
 
-        main_window.minsize(1000,560)
-        main_window.maxsize(1920,1080)
-        
-        main_window.config(bg="lightgrey")
+        # configure the rows and columns to resize properly
+        self.main_window.grid_rowconfigure(1, weight=1)
+        self.main_window.grid_columnconfigure(0, weight=1)
+        self.main_window.grid_columnconfigure(1, weight=1)
 
-        self.main_window = main_window
-    
-    #TODO: add menu items like: file (save, save as, open, etc), view (apperance, etc), help (about, etc), etc
-    def init_menu(self):
-        menu_frame = tk.Frame(self.main_window, width=1550, height=40, bg='white')
-        menu_frame.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
-        menu_frame.pack_propagate(False)
 
-        self.menu_frame = menu_frame
-    
-    #TODO: add menu items like: file (save, save as, open, etc), view (apperance, etc), help (about, etc), etc
-   
-    def init_shot(self):
-        shot_frame = tk.Frame(self.main_window, width=1300, height=500, bg='white')
-        shot_frame.grid(row=1, column=0, padx=5, sticky="WN")
-        shot_frame.pack_propagate(False)
-        
-        #mwc.MainPageController.shot_graph()
-
-        self.shot_frame = shot_frame
-    
-    def init_mainSliderFrame(self):
-        mainSlider_frame = tk.Frame(self.main_window, width=1300, height=100, bg='white')
-        mainSlider_frame.grid(row=2, column=0, padx=5, sticky="WN")
-        mainSlider_frame.pack_propagate(False)
-        
-        #mwc.MainPageController.shot_graph()
-
-        self.mainSlider_frame = mainSlider_frame
-        
-        
     def init_trace(self):
-        trace_frame = tk.Frame(self.main_window, width=250, height=500, bg='white')
-        trace_frame.grid(row=1, column=1, padx=5, sticky="WN")
-        trace_frame.pack_propagate(False)
-        
-        #mwc.MainPageController.shot_graph()
+        self.trace_frame = GraphFrame(self.split_window, (min_window_width - split_shash_width) / 2, min_window_height - menu_height)
+        var = 0.5
+        var2 = 0
+        self.trace_frame.add_slider('test', 0, 1, 0.01, lambda : self.test(), var)
+        x = 'This is a test :)'
+        self.trace_frame.add_slider('test2', 0, 1, 0.01, lambda x = x: self.test2(x), var2)
 
-        self.trace_frame = trace_frame
-        
-    def init_traceSliderFrame(self):
-        traceSlider_frame = tk.Frame(self.main_window, width=250, height=100, bg='white')
-        traceSlider_frame.grid(row=2, column=1, padx=5, sticky="WN")
-        traceSlider_frame.pack_propagate(False)
-        
-        #mwc.MainPageController.shot_graph()
+        self.split_window.add(self.trace_frame.full_frame, minsize=min_graph_frame_width)
 
-        self.traceSlider_frame = traceSlider_frame
+    def init_shot(self):
+        self.shot_frame = GraphFrame(self.split_window, (min_window_width - split_shash_width) / 2, min_window_height - menu_height)    
+        #self.shot_frame.plot_frame() #This is an instance of Graphframe
+        self.split_window.add(self.shot_frame.full_frame, minsize=min_graph_frame_width)
         
-    def init_browse_button(self):
-        browse_button = tk.Button(self.main_window,text='Browse',highlightcolor='gray',height=1,width=3)
-        browse_button.grid(row=0,column=0,padx=5,sticky="W")
-        #browse_button.pack_propogate(False)
-        self.browse_button = browse_button
-    """
-    HOW BUTTON WILL MODIFY MAIN WINDOW CONTROLLER:
-        GET INFO -> PASS TO CONTROLER -> CONTROLLER FILTER PASS REALAVENT INFO -> VIEWER
-    def on_press_browse(self):
-        dirName = COME FROM THE BUTTON
-        mwc.MainPageController.get_file_info_from_directory(self, dirName)
+    #Trace slider functions 
+    def test(self):
+        print('Hello World!')
+
+    def test2(self, x):
+        print('testing ')
+        print(x)
+
+    #Shot slider functions 
+
+    def open_file_explorer(self):
+        filename = filedialog.askopenfile(initialdir = "/", title = "Select a File")
+        #print(filename.name)
+        #os.startfile(os.path.abspath(filename))
         
-        each widget is an object --> Widget is a subject ->
-        [our job what happens define whats happens on buttons press and what is returned 
-         to the screen] -> screen is observer
-    """
-#Class for frames with graphs and sliders 
+        mwc.controller.read_segy_file(filename.name)
+        self.shot_frame.plot_frame()
+
+    def set_color_scheme(self):
+        pass
+
 class GraphFrame():
-    full_frame = None
-    
+    full_frame = tk.PanedWindow
+
+    canvas_frame = None
     canvas = None
 
     sliders_frame = None
-    #Dictonary of sliders (key = name and value = Slider class object)
-    #Maybe change to a list? 
-    slider_dict = None
+    sliders = []
 
-    slider_orient = 'horizontal'
-    slider_length = 1000
+    def __init__(self, root, w, h):
+        self.full_frame = tk.PanedWindow(root, orient=tk.VERTICAL, sashrelief=tk.RAISED, sashwidth=split_shash_width)
 
-    def __init__(self):
-        pass 
+        self.canvas_frame = tk.Frame(self.full_frame, width=w, height = h / 2, bg = 'red')
+        self.full_frame.add(self.canvas_frame, minsize=min_canvas_height)
 
-    def init_graph(self):
-        pass 
+        self.sliders_frame = tk.Frame(self.full_frame, width=w, height = h / 2, bg='blue')
+        self.sliders_frame.columnconfigure(0, weight=1)
+        self.full_frame.add(self.sliders_frame, minsize=min_sliders_height)
+        
+        
+        
+    def add_slider(self, l, f, t, r, c, v):
+        temp = Slider(self.sliders_frame, l, f, t, r, c, v)
+        self.sliders.insert(len(self.sliders), temp)
+        self.sliders[len(self.sliders) - 1].grid(len(self.sliders) - 1)
     
-    #add slider at the end
-    def add_slider(self, root, label, f, t, r, c):
-        self.add_slider(self.sliders.length, root, label, f, t, r, c)
-    
-    #add slider at index i 
-    def add_slider(self, i, root, label, f, t, r, c):
-        #bounds checking 
-        if (i > self.sliders.length or i < 0):
-            return
-
-    #remove slider at index i 
-    def remove_slider(self, i):
-        pass 
-
+    def plot_frame(self):
+        from matplotlib.figure import Figure
+        from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
+        fig = Figure() #Create the figure        
+        ax1 = fig.add_subplot(111) #add axis to figure
+        ax1.pcolor(mwc.controller.seismicDataContainer.geoLocs,mwc.controller.seismicDataContainer.twtt,mwc.controller.seismicDataContainer.data,cmap='gray')
+        ax1.set_xlabel('X-axis') #add labels to x-axis
+        ax1.set_ylabel('Y-axis') #add label to y-axis
+        ax1.invert_yaxis()
+        self.canvas = FigureCanvasTkAgg(fig,master=self.canvas_frame) #place matploitlib object on GUI canvas object
+        self.canvas.draw() #Update the canvas
+        self.canvas.get_tk_widget().pack(side='top') #
+         
+        
 class Slider():
-    slider = None
+    slider = None #tkinter slider 
     entry = None #textbox
-    var = None 
+    var = None #variable it links to
+    label = None #name of this slider
 
-    def __init__(self):
-        pass 
+    def __init__(self, root: tk.Frame, l, f, t, r, c, v):
+        self.var = v
+        self.label = l
+        self.slider = tk.Scale(root, variable=self.var, label=self.label, from_=f, to=t, resolution=r, command=c,
+            orient='horizontal')
+        self.entry = tk.Entry(root, width=entry_width, textvariable=self.var)
+
+    def grid(self, r):
+        self.slider.grid(row=r, column=0, sticky='nsew')
+        self.entry.grid(row=r, column=1, sticky='ne')
