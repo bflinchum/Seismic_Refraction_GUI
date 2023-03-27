@@ -26,6 +26,7 @@ class seismicData:
         self.geoLocs = np.array([],dtype=float) 
         self.twtt = np.array([],dtype=float)
         self.data = np.array([],dtype=float)
+        self.offset = np.array([],dtype=float)
         self.dx_geo = float #Default to 2 m but needs to get calculated upon reading data
         
         

@@ -19,6 +19,7 @@ class MainPageController():
         self.current_shotLocation = float #Default to zero unless overwritten **GET FROM GUI**
         self.seismic_directory_path = '' #Path to directory that holds seisimc data **GET FROM GUI**
         self.current_segy_fileName = '' #Depends on the shot location 
+        self.path_to_pick_file = ''
         
         self.fileInformation = [] #Empty List, populate once directory is selected from GUI **NEW METHOD GET FILE_4_Shot()
         
@@ -129,8 +130,17 @@ class MainPageController():
         self.seismicDataContainer.dx_geo = gx
         self.seismicDataContainer.offset = shotLocs - gx
 
-    def read_pick_data(self):
-        pass
+    def read_pick_data(self,path_to_pick_file,pickFileName):
+        #make sure path_to_pick_file has / after it
+        self.pickDataContainer.pick_modelTraveTimePath = path_to_pick_file 
+        self.pickDataContainer.pick_modelTraveTimeFile = pickFileName
+        self.pickDataContainer.pick_modelTraveTimesExists = True
+        
+        columnData = np.loadtxt(pickFileName)
+        self.pickDataContainer.pick_shotLocs = columnData[:, 0]
+        self.pickDataContainer.pick_geoLocs = columnData[:, 1]
+        self.pickDataContainer.pick_travelTimes = columnData[:, 2]
+        
 
     def write_pick_data(self):
         pass
