@@ -8,6 +8,10 @@ import os
 from matplotlib.widgets import SliderBase
 import mainWindowController as mwc
 
+
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
+        
 #MAIN/SHOT WINDOW VARIABLES
 shotWin_colorMap = 'gray' #colormap for pcolorfast(cmap=XX)
 shotWin_vmin = 0 #lower amplitude clip (vmin) in pcolor **update with slider
@@ -112,26 +116,36 @@ class MainWindowView():
 
     def init_trace(self):
         self.trace_frame = GraphFrame(self.split_window, (min_window_width - split_shash_width) / 2, min_window_height - menu_height)
-        var = 0.5
-        var2 = 0
-        self.trace_frame.add_slider('test', 0, 1, 0.01, lambda : self.test(), var)
-        x = 'This is a test :)'
-        self.trace_frame.add_slider('test2', 0, 1, 0.01, lambda x = x: self.test2(x), var2)
+        # var = 0.5
+        # var2 = 0
+        # self.trace_frame.add_slider('test', 0, 1, 0.01, lambda : self.test(), var)
+        # x = 'This is a test :)'
+        # self.trace_frame.add_slider('test2', 0, 1, 0.01, lambda x = x: self.test2(x), var2)
 
         self.split_window.add(self.trace_frame.full_frame, minsize=min_graph_frame_width)
 
     def init_shot(self):
         self.shot_frame = GraphFrame(self.split_window, (min_window_width - split_shash_width) / 2, min_window_height - menu_height)    
         #self.shot_frame.plot_frame() #This is an instance of Graphframe
+        var = 0.5
+        var2 = 0
+        self.shot_frame.add_slider('test', 0, 1, 0.01, lambda : self.test(), var)
+        x = 'This is a test :)'
+        self.shot_frame.add_slider('test2', 0, 1, 0.01, lambda x = x: self.test2(x), var2)
+
         self.split_window.add(self.shot_frame.full_frame, minsize=min_graph_frame_width)
         
     #Trace slider functions 
+    
     def test(self):
         print('Hello World!')
 
-    def test2(self, x):
-        print('testing ')
-        print(x)
+    def test2(self, max_time):
+        max_time = float(max_time)
+        #print('testing ')
+        #print(max_time+5)
+        self.shot_frame.update_pcolorFast(max_time)
+        
 
     #Shot slider functions 
 
@@ -141,7 +155,8 @@ class MainWindowView():
         #os.startfile(os.path.abspath(filename))
         
         mwc.controller.read_segy_file(filename.name)
-        self.shot_frame.plot_frame()
+        default_max_time = 0.5
+        self.shot_frame.add_pcolorFast(default_max_time)
 
     def set_color_scheme(self):
         pass
@@ -151,7 +166,10 @@ class GraphFrame():
 
     canvas_frame = None
     canvas = None
-
+    
+    #The object that holds the matplotlib axes
+    dataAxes = None
+    
     sliders_frame = None
     sliders = []
 
@@ -172,18 +190,48 @@ class GraphFrame():
         self.sliders.insert(len(self.sliders), temp)
         self.sliders[len(self.sliders) - 1].grid(len(self.sliders) - 1)
     
-    def plot_frame(self):
-        from matplotlib.figure import Figure
-        from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
+    #Version two rename a bit better
+    def add_pcolorFast(self,max_time):
+        
+
+        #Create the Matplotlib figure         
         fig = Figure() #Create the figure        
-        ax1 = fig.add_subplot(111) #add axis to figure
-        ax1.pcolor(mwc.controller.seismicDataContainer.geoLocs,mwc.controller.seismicDataContainer.twtt,mwc.controller.seismicDataContainer.data,cmap='gray')
-        ax1.set_xlabel('X-axis') #add labels to x-axis
-        ax1.set_ylabel('Y-axis') #add label to y-axis
-        ax1.invert_yaxis()
+        self.dataAxes = fig.add_subplot(111) #add axis to figure      
+        self.dataAxes.pcolorfast(mwc.controller.seismicDataContainer.geoLocs,mwc.controller.seismicDataContainer.twtt,
+                       mwc.controller.seismicDataContainer.data,cmap='gray')
+        self.dataAxes.set_ylim([0,max_time])
+        self.dataAxes.set_xlabel('X-axis') #add labels to x-axis
+        self.dataAxes.set_ylabel('Y-axis') #add label to y-axis 
+        self.dataAxes.invert_yaxis()
+        
         self.canvas = FigureCanvasTkAgg(fig,master=self.canvas_frame) #place matploitlib object on GUI canvas object
         self.canvas.draw() #Update the canvas
         self.canvas.get_tk_widget().pack(side='top') #
+    
+    def update_pcolorFast(self,max_time):
+        self.dataAxes.clear()
+        self.dataAxes.pcolorfast(mwc.controller.seismicDataContainer.geoLocs,mwc.controller.seismicDataContainer.twtt,
+                       mwc.controller.seismicDataContainer.data,cmap='gray') 
+        self.dataAxes.set_ylim([0,max_time])
+        self.dataAxes.set_xlabel('X-axis') #add labels to x-axis
+        self.dataAxes.set_ylabel('Y-axis') #add label to y-axis 
+        self.dataAxes.invert_yaxis()
+        self.canvas.draw()
+        # ax1 = self.canvas.figure.axes(0)
+        # ax1.set_ylim([0,max_time])
+        # ax1.draw()
+        pass
+    
+    def add_wiggleTrace(self):
+        pass
+    
+    def update_wiggleTrace(self):
+        pass
+    
+    
+    def plot_frame(self):
+        pass
+        
          
         
 class Slider():
