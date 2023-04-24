@@ -141,14 +141,17 @@ class MainWindowView():
     
     def shot_get_amplitude_from_slider(self,init_amplitude):
         max_amplitude = float(init_amplitude)
+        max_time = self.shot_frame.sliders[1].slider.get() # gets curent value of slider in positon 1 = time slider
         print(max_amplitude)
         print('Hello World!')
+        self.shot_frame.update_pcolorFast(max_time,max_amplitude)
 
     def shot_get_time_from_slider(self, max_time):
         max_time = float(max_time)
         #print('testing ')
         print(max_time)
-        self.shot_frame.update_pcolorFast(max_time)
+        max_amplitude = self.shot_frame.sliders[0].slider.get()  #gets curent value of slider in positon 0 = ampltiude slider
+        self.shot_frame.update_pcolorFast(max_time,max_amplitude)
         
 
     #Shot slider functions 
@@ -160,7 +163,8 @@ class MainWindowView():
         
         mwc.controller.read_segy_file(filename.name)
         default_max_time = 0.5
-        self.shot_frame.add_pcolorFast(default_max_time)
+        default_max_amplitude = 0.45
+        self.shot_frame.add_pcolorFast(default_max_time,default_max_amplitude)
 
     def set_color_scheme(self):
         pass
@@ -195,13 +199,13 @@ class GraphFrame():
         self.sliders[len(self.sliders) - 1].grid(len(self.sliders) - 1)
     
     #Version two rename a bit better
-    def add_pcolorFast(self,max_time):
+    def add_pcolorFast(self,max_time,max_amplitude):
     
         #Create the Matplotlib figure         
         fig = Figure() #Create the figure        
         self.dataAxes = fig.add_subplot(111) #add axis to figure      
         self.dataAxes.pcolorfast(mwc.controller.seismicDataContainer.geoLocs,mwc.controller.seismicDataContainer.twtt,
-                       mwc.controller.seismicDataContainer.data,cmap='gray')
+                       mwc.controller.seismicDataContainer.data,cmap='gray',vmin=-max_amplitude,vmax=max_amplitude)
         self.dataAxes.set_ylim([0,max_time])
         self.dataAxes.set_xlabel('X-axis') #add labels to x-axis
         self.dataAxes.set_ylabel('Y-axis') #add label to y-axis 
@@ -211,10 +215,10 @@ class GraphFrame():
         self.canvas.draw() #Update the canvas
         self.canvas.get_tk_widget().pack(side='top') #
     
-    def update_pcolorFast(self,max_time):
+    def update_pcolorFast(self,max_time,max_amplitude):
         self.dataAxes.clear()
         self.dataAxes.pcolorfast(mwc.controller.seismicDataContainer.geoLocs,mwc.controller.seismicDataContainer.twtt,
-                       mwc.controller.seismicDataContainer.data,cmap='gray') 
+                       mwc.controller.seismicDataContainer.data,cmap='gray',vmin=-max_amplitude,vmax=max_amplitude) 
         self.dataAxes.set_ylim([0,max_time])
         self.dataAxes.set_xlabel('X-axis') #add labels to x-axis
         self.dataAxes.set_ylabel('Y-axis') #add label to y-axis 
