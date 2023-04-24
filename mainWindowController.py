@@ -39,7 +39,7 @@ class MainPageController():
     def shot_graph(self):
         #THIS WILL CALL MAIN WINDOW VIEW
         pass
-
+    
     #dirName = "/Users/bflinch/Dropbox/Clemson/Research/ResearchProjects/DukeEnergy/Data/FullLine_Segy/P-wave/"
     def get_file_info_from_directory(self,dirName):
         """
@@ -125,6 +125,8 @@ class MainPageController():
                 
             
         self.seismicDataContainer.data = data
+        #print(isinstance(self.seismicDataContainer,seismicData.seismicData))
+        self.seismicDataContainer.normalizeTraces() #Normalize Traces
         self.seismicDataContainer.geoLocs = x
         self.seismicDataContainer.twtt = t
         self.seismicDataContainer.dx_geo = gx

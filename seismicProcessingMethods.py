@@ -17,6 +17,11 @@ import glob as glb
 #For file i/o
 import os
 
+class seismicProcessingMethods():
+    def __init__(self,data):
+        self.data = data
+        
+        
 def normalizeTraces(data):
     """
     This function normalizes each trace (column of 2d array) to the maximum

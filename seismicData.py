@@ -34,7 +34,25 @@ class seismicData:
         self.data = np.array([],dtype=float)
         self.offset = np.array([],dtype=float)
         self.dx_geo = float #Default to 2 m but needs to get calculated upon reading data
-        
+    
+    
+    def normalizeTraces(self):
+         """
+         This function normalizes each trace (column of 2d array) to the maximum
+         value. This is a common way to visualize seismic, espeically first arrival
+         travel-time data.
+         
+         INPUTS:
+         data = a numpy array that is nt x ns (nt = time samples, ns = number of recievers)
+         
+         OUTPUTS:
+         nData = a numpy array of the same size of input with traces normalized
+         """
+         nData = 0 * self.data
+         for i in range(0, self.data.shape[1]):
+             #print(np.max(np.abs(data[:, i])))
+             nData[:, i] = self.data[:, i] / np.max(np.abs(self.data[:, i]))
+         self.data = nData        
         
         
 class plottingSeismicDataParameters():

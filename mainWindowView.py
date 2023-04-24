@@ -127,23 +127,27 @@ class MainWindowView():
     def init_shot(self):
         self.shot_frame = GraphFrame(self.split_window, (min_window_width - split_shash_width) / 2, min_window_height - menu_height)    
         #self.shot_frame.plot_frame() #This is an instance of Graphframe
-        var = 0.5
-        var2 = 0
-        self.shot_frame.add_slider('test', 0, 1, 0.01, lambda : self.test(), var)
-        x = 'This is a test :)'
-        self.shot_frame.add_slider('test2', 0, 1, 0.01, lambda x = x: self.test2(x), var2)
-
+        
+        #If init_amplitude == init_max_time the sliders are linked... can't figure out why... python is weird.
+        init_amplitude = 0.45
+        init_max_time = 0.5
+        self.shot_frame.add_slider('Amplitude', 0, 1, 0.01, lambda x = init_amplitude : self.shot_get_amplitude_from_slider(x), init_amplitude) #First slider in list [0]
+        #x = 'This is a test :)'
+        self.shot_frame.add_slider('Max Time (s)', 0, 1, 0.01, lambda x = init_max_time: self.shot_get_time_from_slider(x), init_max_time) #Second slider in the list [1]
+        #init_max_time.trace("w", lambda name, index,mode, init_max_time=init_max_time: self.shot_get_time_from_slider(init_max_time) )
         self.split_window.add(self.shot_frame.full_frame, minsize=min_graph_frame_width)
         
     #Trace slider functions 
     
-    def test(self):
+    def shot_get_amplitude_from_slider(self,init_amplitude):
+        max_amplitude = float(init_amplitude)
+        print(max_amplitude)
         print('Hello World!')
 
-    def test2(self, max_time):
+    def shot_get_time_from_slider(self, max_time):
         max_time = float(max_time)
         #print('testing ')
-        #print(max_time+5)
+        print(max_time)
         self.shot_frame.update_pcolorFast(max_time)
         
 
@@ -192,8 +196,7 @@ class GraphFrame():
     
     #Version two rename a bit better
     def add_pcolorFast(self,max_time):
-        
-
+    
         #Create the Matplotlib figure         
         fig = Figure() #Create the figure        
         self.dataAxes = fig.add_subplot(111) #add axis to figure      
@@ -245,8 +248,12 @@ class Slider():
         self.label = l
         self.slider = tk.Scale(root, variable=self.var, label=self.label, from_=f, to=t, resolution=r, command=c,
             orient='horizontal')
+        self.slider.set(self.var)
         self.entry = tk.Entry(root, width=entry_width, textvariable=self.var)
-
+        #self.entry.bind_class('KeyRelease',c)
+        #print()
+        #print(self.slider.get())
+        #print(self.t)
     def grid(self, r):
         self.slider.grid(row=r, column=0, sticky='nsew')
         self.entry.grid(row=r, column=1, sticky='ne')
