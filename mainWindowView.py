@@ -79,6 +79,7 @@ class MainWindowView():
 
     amp = None
     time = None
+    currentTraceIndex = 5 #NEEDS TO BE AN INTEGER!
 
     def __init__(self, root):
         self.init_main_window(root)
@@ -117,12 +118,12 @@ class MainWindowView():
     def init_trace(self):
         self.trace_frame = GraphFrame(self.split_window, (min_window_width - split_shash_width) / 2, min_window_height - menu_height)
         init_amplitude = 0.3
-        init_max_time = 0.1
+        init_window_length = 0.1
         init_min_time = 0.0
         
         self.trace_frame.add_slider('Amplitude', 0, 1, 0.01, lambda x = init_amplitude : self.trace_get_amplitude_from_slider(x), init_amplitude) #First slider in list [0]
         self.trace_frame.add_slider('Min Time (s)', 0, 1, 0.01, lambda x = init_min_time: self.trace_get_min_time_from_slider(x), init_min_time) #Second slider in the list [1]
-        self.trace_frame.add_slider('Max Time (s)', 0, 1, 0.01, lambda x = init_max_time: self.trace_get_max_time_from_slider(x), init_max_time) #Second slider in the list [1]
+        self.trace_frame.add_slider('Window Length (s)', 0, 1, 0.01, lambda x = init_window_length: self.trace_get_window_length_from_slider(x), init_window_length) #Second slider in the list [1]
             
         self.split_window.add(self.trace_frame.full_frame, minsize=min_graph_frame_width)
 
@@ -130,13 +131,13 @@ class MainWindowView():
         self.shot_frame = GraphFrame(self.split_window, (min_window_width - split_shash_width) / 2, min_window_height - menu_height)    
         #self.shot_frame.plot_frame() #This is an instance of Graphframe
         
-        #If init_amplitude == init_max_time the sliders are linked... can't figure out why... python is weird.
+        #If init_amplitude == init_window_length the sliders are linked... can't figure out why... python is weird.
         init_amplitude = 0.45
-        init_max_time = 0.5
+        init_window_length = 0.5
         self.shot_frame.add_slider('Amplitude', 0, 1, 0.01, lambda x = init_amplitude : self.shot_get_amplitude_from_slider(x), init_amplitude) #First slider in list [0]
         #x = 'This is a test :)'
-        self.shot_frame.add_slider('Max Time (s)', 0, 1, 0.01, lambda x = init_max_time: self.shot_get_time_from_slider(x), init_max_time) #Second slider in the list [1]
-        #init_max_time.trace("w", lambda name, index,mode, init_max_time=init_max_time: self.shot_get_time_from_slider(init_max_time) )
+        self.shot_frame.add_slider('Max Time (s)', 0, 1, 0.01, lambda x = init_window_length: self.shot_get_time_from_slider(x), init_window_length) #Second slider in the list [1]
+        #init_window_length.trace("w", lambda name, index,mode, init_window_length=init_window_length: self.shot_get_time_from_slider(init_window_length) )
         self.split_window.add(self.shot_frame.full_frame, minsize=min_graph_frame_width)
         
     #Trace slider functions 
@@ -159,28 +160,28 @@ class MainWindowView():
         max_amplitude = float(init_amplitude)
         min_time = self.trace_frame.sliders[1].slider.get() # gets curent value of slider in positon 1 = time slider
         print(min_time)
-        max_time = self.trace_frame.sliders[2].slider.get() # gets curent value of slider in positon 1 = time slider
+        window_length = self.trace_frame.sliders[2].slider.get() # gets curent value of slider in positon 1 = time slider
         #print(max_amplitude)
         #print('Hello World!')
-        self.trace_frame.update_wiggleTrace(5,min_time,max_time,max_amplitude)
+        self.trace_frame.update_wiggleTrace(5,min_time,window_length,max_amplitude)
     #Shot slider functions 
     
     def trace_get_min_time_from_slider(self,init_min_time):
         min_time = float(init_min_time)
         max_amplitude = self.trace_frame.sliders[0].slider.get() # gets curent value of slider in positon 1 = time slider
         print(min_time)
-        max_time = self.trace_frame.sliders[2].slider.get() # gets curent value of slider in positon 1 = time slider
+        window_length = self.trace_frame.sliders[2].slider.get() # gets curent value of slider in positon 1 = time slider
         #print(max_amplitude)
         #print('Hello World!')
-        self.trace_frame.update_wiggleTrace(5,min_time,max_time,max_amplitude)
+        self.trace_frame.update_wiggleTrace(5,min_time,window_length,max_amplitude)
         
-    def trace_get_max_time_from_slider(self,init_max_time):
-        max_time = float(init_max_time)
+    def trace_get_window_length_from_slider(self,init_window_length):
+        window_length = float(init_window_length)
         max_amplitude = self.trace_frame.sliders[0].slider.get() # gets curent value of slider in positon 1 = time slider
         min_time = self.trace_frame.sliders[1].slider.get() # gets curent value of slider in positon 1 = time slider
         #print(max_amplitude)
         #print('Hello World!')
-        self.trace_frame.update_wiggleTrace(5,min_time,max_time,max_amplitude)
+        self.trace_frame.update_wiggleTrace(5,min_time,window_length,max_amplitude)
             
     #Shot slider functions 
     
@@ -194,8 +195,9 @@ class MainWindowView():
         default_max_time = 0.5
         default_max_amplitude = 0.45
         default_min_time = 0
+        default_window_length = 0.05
         self.shot_frame.add_pcolorFast(default_max_time,default_max_amplitude)
-        self.trace_frame.add_wiggleTrace(5,default_min_time,default_max_time,default_max_amplitude)
+        self.trace_frame.add_wiggleTrace(5,default_min_time,default_window_length,default_max_amplitude)
     def set_color_scheme(self):
         pass
 
@@ -259,14 +261,14 @@ class GraphFrame():
         # ax1.draw()
         pass
     
-    def add_wiggleTrace(self,currentLocation_index,min_time,max_time,max_amplitude):
+    def add_wiggleTrace(self,currentLocation_index,min_time,window_length,max_amplitude):
         #currentLocation_index = integer defining the column of the trace
         
         #CREATES THE MATPLOTLIB PLOT
         fig = Figure() #Create the figure        
         self.dataAxes = fig.add_subplot(111) #add axis to figure      
         self.dataAxes.plot(mwc.controller.seismicDataContainer.data[:,currentLocation_index],mwc.controller.seismicDataContainer.twtt)
-        self.dataAxes.set_ylim([min_time,max_time])
+        self.dataAxes.set_ylim([min_time,min_time+window_length])
         self.dataAxes.set_xlim([-max_amplitude,max_amplitude])
         self.dataAxes.set_xlabel('X-axis') #add labels to x-axis
         self.dataAxes.set_ylabel('Y-axis') #add label to y-axis 
@@ -278,10 +280,10 @@ class GraphFrame():
         self.canvas.get_tk_widget().pack(side='top') #
         pass
     
-    def update_wiggleTrace(self,currentLocation_index,min_time,max_time,max_amplitude):
+    def update_wiggleTrace(self,currentLocation_index,min_time,window_length,max_amplitude):
         self.dataAxes.clear()
         self.dataAxes.plot(mwc.controller.seismicDataContainer.data[:,currentLocation_index],mwc.controller.seismicDataContainer.twtt)
-        self.dataAxes.set_ylim([min_time,max_time])
+        self.dataAxes.set_ylim([min_time,min_time+window_length])
         self.dataAxes.set_xlim([-max_amplitude,max_amplitude])
         self.dataAxes.set_xlabel('X-axis') #add labels to x-axis
         self.dataAxes.set_ylabel('Y-axis') #add label to y-axis 
