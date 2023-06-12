@@ -85,14 +85,22 @@ class MainWindowView():
         self.init_main_window(root)
         self.init_menu()
         self.init_split()
+        
 
+
+    
     def init_main_window(self, root):
         self.main_window = root
         self.main_window.title('Seismic Refactor')
         self.main_window.minsize(min_window_width, min_window_height)
         self.main_window.maxsize(max_window_width, max_window_height)
         self.main_window.config(bg=color_background)
-
+        
+        self.main_window.bind('<Left>',self.shiftTraceLeft)
+        self.main_window.bind('<Right>',self.shiftTraceRight)
+        self.main_window.focus_set()
+        
+        
     def init_menu(self):
         self.menu_frame = tk.Frame(self.main_window, height=menu_height, bg=color_menu, padx = frame_padx, pady= frame_pady)
         self.menu_frame.grid(row=0, column=0, columnspan=2, sticky='nsew')
@@ -141,20 +149,45 @@ class MainWindowView():
         self.split_window.add(self.shot_frame.full_frame, minsize=min_graph_frame_width)
         
     #Trace slider functions 
-    
+    def shiftTrace(self, traceNumber):
+        max_amplitude = self.trace_frame.sliders[0].slider.get()
+        min_time = self.trace_frame.sliders[1].slider.get()
+        window_length = self.trace_frame.sliders[2].slider.get()
+        self.trace_frame.update_wiggleTrace(traceNumber,min_time,window_length,max_amplitude)
+        self.currentTraceIndex = traceNumber
+        
+        max_time = self.shot_frame.sliders[1].slider.get()
+        print('MAXIMUM TIME')
+        print(max_time)
+        print('************')
+        max_amplitude = self.shot_frame.sliders[0].slider.get()
+        self.shot_frame.update_pcolorFast(max_time,max_amplitude,self.currentTraceIndex)
+        
+    def shiftTraceLeft(self, event):
+        #print(self.currentTraceIndex-1)
+        self.shiftTrace(self.currentTraceIndex-1)
+        
+        
+    def shiftTraceRight(self, event):
+        self.shiftTrace(self.currentTraceIndex+1)
+        #print(self.currentTraceIndex+1)
+        
+        
+        
+        
     def shot_get_amplitude_from_slider(self,init_amplitude):
         max_amplitude = float(init_amplitude)
         max_time = self.shot_frame.sliders[1].slider.get() # gets curent value of slider in positon 1 = time slider
         #print(max_amplitude)
         #print('Hello World!')
-        self.shot_frame.update_pcolorFast(max_time,max_amplitude)
+        self.shot_frame.update_pcolorFast(max_time,max_amplitude,self.currentTraceIndex)
 
     def shot_get_time_from_slider(self, max_time):
         max_time = float(max_time)
         #print('testing ')
         #print(max_time)
         max_amplitude = self.shot_frame.sliders[0].slider.get()  #gets curent value of slider in positon 0 = ampltiude slider
-        self.shot_frame.update_pcolorFast(max_time,max_amplitude)
+        self.shot_frame.update_pcolorFast(max_time,max_amplitude,self.currentTraceIndex)
         
     def trace_get_amplitude_from_slider(self,init_amplitude):
         max_amplitude = float(init_amplitude)
@@ -163,7 +196,7 @@ class MainWindowView():
         window_length = self.trace_frame.sliders[2].slider.get() # gets curent value of slider in positon 1 = time slider
         #print(max_amplitude)
         #print('Hello World!')
-        self.trace_frame.update_wiggleTrace(5,min_time,window_length,max_amplitude)
+        self.trace_frame.update_wiggleTrace(self.currentTraceIndex,min_time,window_length,max_amplitude)
     #Shot slider functions 
     
     def trace_get_min_time_from_slider(self,init_min_time):
@@ -173,7 +206,7 @@ class MainWindowView():
         window_length = self.trace_frame.sliders[2].slider.get() # gets curent value of slider in positon 1 = time slider
         #print(max_amplitude)
         #print('Hello World!')
-        self.trace_frame.update_wiggleTrace(5,min_time,window_length,max_amplitude)
+        self.trace_frame.update_wiggleTrace(self.currentTraceIndex,min_time,window_length,max_amplitude)
         
     def trace_get_window_length_from_slider(self,init_window_length):
         window_length = float(init_window_length)
@@ -181,7 +214,7 @@ class MainWindowView():
         min_time = self.trace_frame.sliders[1].slider.get() # gets curent value of slider in positon 1 = time slider
         #print(max_amplitude)
         #print('Hello World!')
-        self.trace_frame.update_wiggleTrace(5,min_time,window_length,max_amplitude)
+        self.trace_frame.update_wiggleTrace(self.currentTraceIndex,min_time,window_length,max_amplitude)
             
     #Shot slider functions 
     
@@ -196,8 +229,8 @@ class MainWindowView():
         default_max_amplitude = 0.45
         default_min_time = 0
         default_window_length = 0.05
-        self.shot_frame.add_pcolorFast(default_max_time,default_max_amplitude)
-        self.trace_frame.add_wiggleTrace(5,default_min_time,default_window_length,default_max_amplitude)
+        self.shot_frame.add_pcolorFast(default_max_time,default_max_amplitude,self.currentTraceIndex)
+        self.trace_frame.add_wiggleTrace(self.currentTraceIndex,default_min_time,default_window_length,default_max_amplitude)
     def set_color_scheme(self):
         pass
 
@@ -231,13 +264,16 @@ class GraphFrame():
         self.sliders[len(self.sliders) - 1].grid(len(self.sliders) - 1)
     
     #Version two rename a bit better
-    def add_pcolorFast(self,max_time,max_amplitude):
+    def add_pcolorFast(self,max_time,max_amplitude,currentTraceIndex):
     
         #Create the Matplotlib figure         
         fig = Figure() #Create the figure        
         self.dataAxes = fig.add_subplot(111) #add axis to figure      
         self.dataAxes.pcolorfast(mwc.controller.seismicDataContainer.geoLocs,mwc.controller.seismicDataContainer.twtt,
                        mwc.controller.seismicDataContainer.data,cmap='gray',vmin=-max_amplitude,vmax=max_amplitude)
+        xTemp = mwc.controller.seismicDataContainer.geoLocs[currentTraceIndex]
+        yTemp = mwc.controller.seismicDataContainer.twtt
+        self.dataAxes.plot([xTemp,xTemp],[yTemp[0],yTemp[-1]],'r--')
         self.dataAxes.set_ylim([0,max_time])
         self.dataAxes.set_xlabel('X-axis') #add labels to x-axis
         self.dataAxes.set_ylabel('Y-axis') #add label to y-axis 
@@ -247,10 +283,14 @@ class GraphFrame():
         self.canvas.draw() #Update the canvas
         self.canvas.get_tk_widget().pack(side='top') #
     
-    def update_pcolorFast(self,max_time,max_amplitude):
+    def update_pcolorFast(self,max_time,max_amplitude,currentTraceIndex):
+        #print(max_time)
         self.dataAxes.clear()
         self.dataAxes.pcolorfast(mwc.controller.seismicDataContainer.geoLocs,mwc.controller.seismicDataContainer.twtt,
                        mwc.controller.seismicDataContainer.data,cmap='gray',vmin=-max_amplitude,vmax=max_amplitude) 
+        xTemp = mwc.controller.seismicDataContainer.geoLocs[currentTraceIndex]
+        yTemp = mwc.controller.seismicDataContainer.twtt
+        self.dataAxes.plot([xTemp,xTemp],[yTemp[0],yTemp[-1]],'r--')
         self.dataAxes.set_ylim([0,max_time])
         self.dataAxes.set_xlabel('X-axis') #add labels to x-axis
         self.dataAxes.set_ylabel('Y-axis') #add label to y-axis 
