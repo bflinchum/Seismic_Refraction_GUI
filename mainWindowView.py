@@ -157,10 +157,12 @@ class MainWindowView():
         self.currentTraceIndex = traceNumber
         
         max_time = self.shot_frame.sliders[1].slider.get()
+
+        max_amplitude = self.shot_frame.sliders[0].slider.get()
         print('MAXIMUM TIME')
         print(max_time)
+        print(max_amplitude)
         print('************')
-        max_amplitude = self.shot_frame.sliders[0].slider.get()
         self.shot_frame.update_pcolorFast(max_time,max_amplitude,self.currentTraceIndex)
         
     def shiftTraceLeft(self, event):
@@ -178,8 +180,10 @@ class MainWindowView():
     def shot_get_amplitude_from_slider(self,init_amplitude):
         max_amplitude = float(init_amplitude)
         max_time = self.shot_frame.sliders[1].slider.get() # gets curent value of slider in positon 1 = time slider
-        #print(max_amplitude)
-        #print('Hello World!')
+        
+        print('Hello World!')
+        print(max_amplitude)
+        print(max_time)
         self.shot_frame.update_pcolorFast(max_time,max_amplitude,self.currentTraceIndex)
 
     def shot_get_time_from_slider(self, max_time):
@@ -192,7 +196,7 @@ class MainWindowView():
     def trace_get_amplitude_from_slider(self,init_amplitude):
         max_amplitude = float(init_amplitude)
         min_time = self.trace_frame.sliders[1].slider.get() # gets curent value of slider in positon 1 = time slider
-        print(min_time)
+        #print(min_time)
         window_length = self.trace_frame.sliders[2].slider.get() # gets curent value of slider in positon 1 = time slider
         #print(max_amplitude)
         #print('Hello World!')
@@ -244,9 +248,11 @@ class GraphFrame():
     dataAxes = None
     
     sliders_frame = None
-    sliders = []
+
+
 
     def __init__(self, root, w, h):
+        self.sliders = []
         self.full_frame = tk.PanedWindow(root, orient=tk.VERTICAL, sashrelief=tk.RAISED, sashwidth=split_shash_width)
 
         self.canvas_frame = tk.Frame(self.full_frame, width=w, height = h / 2, bg = 'red')
@@ -262,6 +268,8 @@ class GraphFrame():
         temp = Slider(self.sliders_frame, l, f, t, r, c, v)
         self.sliders.insert(len(self.sliders), temp)
         self.sliders[len(self.sliders) - 1].grid(len(self.sliders) - 1)
+        print(l)
+        print(len(self.sliders) - 1)
     
     #Version two rename a bit better
     def add_pcolorFast(self,max_time,max_amplitude,currentTraceIndex):
